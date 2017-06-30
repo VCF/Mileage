@@ -77,6 +77,6 @@ if (length(cpk) > 0) {
 
 head <- readLines("head.md")
 
-cat(head, "```", msg, "```", file="README.md", sep="\n")
+cat(head, "```", paste(msg, collapse=''), "```", file="README.md", sep="\n")
 
 message(msg)

@@ -22,7 +22,7 @@ cost of a kWh. It is parsed by [run.R](run.R).
 [Prime]: https://en.wikipedia.org/wiki/Toyota_Prius_Plug-in_Hybrid
 [KillAWatt]: http://www.p3international.com/products/p4400.html
 
-Current data:
+Current data (EMV=Electric vehicle, ICE=Gasoline):
 ```
 Summary statistics:
        Time : 12 days (0.03 years)
@@ -30,11 +30,8 @@ Summary statistics:
   ICE miles : 7.2
         kWh : 64.27
      Mi/kWh : 3.81
-
         MPG : 54.0
-
   Cents/kWh : 17.6
-
  Electicity : $11.31 ($343.89/year)
   BreakEven : $2.49 = Break-even cost of gasoline
 
