@@ -8,26 +8,26 @@ data <- data[ !is.na(data$kWh), ]
 np   <- nrow(data)
 
 ## Offset structure to calculate deltas; it lacks the last row
-offset <- data.frame(Oddometer = c(data$Oddometer[ -np ]),
+offset <- data.frame(Odometer = c(data$Odometer[ -np ]),
                      kWh       = c(data$kWh[ -np ]))
 ## To make offsets work, remove the first row of data
 data <- data[ -1, ]
 
 for (col in colnames(offset)) {
-    ## Oddometer and watt meter might get reset. If the offset is less
+    ## Odometer and watt meter might get reset. If the offset is less
     ## than the data, presume offset to be zero.
     offset[[col]] <- ifelse(offset[[col]] < data[[col]], offset[[col]], 0)
 }
 
 ## Remove ICE miles from mileage:
-offset$Oddometer <- ifelse(is.na(data$MilesICE), offset$Oddometer,
-                           offset$Oddometer + data$MilesICE)
+offset$Odometer <- ifelse(is.na(data$MilesICE), offset$Odometer,
+                           offset$Odometer + data$MilesICE)
 
 ## Format date column
 data$Date <- as.Date(data$Date, "%Y-%m-%d")
 
 ## Calculate per-trip values:
-data$MilesEMV    <- data$Oddometer - offset$Oddometer
+data$MilesEMV    <- data$Odometer - offset$Odometer
 data$Consumed    <- data$kWh - offset$kWh
 data[['Mi/kWh']] <- data$MilesEMV / data$Consumed
 
@@ -36,7 +36,7 @@ milesICE <- sum(data$MilesICE, na.rm=TRUE)
 milesEMV <- sum(data$MilesEMV, na.rm=TRUE)
 totalkWh <- sum(data$Consumed, na.rm=TRUE)
 mpkWh    <- milesEMV / totalkWh
-days     <- data$Date[np-1] - data$Date[1]
+days     <- data$Date[np-1] - data$Date[1] + 1
 
 ## Display summary stats:
 msg <- sprintf("Summary statistics:
@@ -71,7 +71,7 @@ if (length(cpk) > 0) {
     cost      <- cpk * totalkWh / 100  # Total cost of consumed electricity
     yearly    <- cost * 365 / as.integer(days)     # Average annual cost
     msg <- c(msg, sprintf(" Electicity : $%.2f ($%.2f/year)
-  BreakEven : $%.2f = Break-even cost of gasoline
+  BreakEven : $%.2f/gal = Equivalent cost of gasoline
 ", cost, yearly, elecGal))
 }
 
@@ -80,3 +80,6 @@ head <- readLines("head.md")
 cat(head, "```", paste(msg, collapse=''), "```", file="README.md", sep="\n")
 
 message(msg)
+
+## Generate another month of blank lines for log.txt:
+## message(sprintf("%s - - -\n",data$Date[np-1] + 1:30))
