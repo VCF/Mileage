@@ -27,17 +27,35 @@ offset$Odometer <- ifelse(is.na(data$MilesICE), offset$Odometer,
 data$Date <- as.Date(data$Date, "%Y-%m-%d")
 
 ## Calculate per-trip values:
-data$MilesEMV    <- data$Odometer - offset$Odometer
-data$Consumed    <- data$kWh - offset$kWh
-data[['Mi/kWh']] <- data$MilesEMV / data$Consumed
+data$MilesEMV     <- data$Odometer - offset$Odometer
+data$Consumed     <- data$kWh - offset$kWh
+mpkHeader         <- 'Mi/kWh'
+data[[mpkHeader]] <- data$MilesEMV / data$Consumed
 
 ## Calculate totals:
 milesICE <- sum(data$MilesICE, na.rm=TRUE)
 milesEMV <- sum(data$MilesEMV, na.rm=TRUE)
 totalkWh <- sum(data$Consumed, na.rm=TRUE)
-mpkWh    <- milesEMV / totalkWh
 days     <- data$Date[np-1] - data$Date[1] + 1
 
+# What days have multiple runs? These can include data that represent
+# partial charges
+dupDays  <- data[ duplicated(data$Date), "Date"]
+isDup    <- is.element(data$Date, dupDays)
+
+## Highlight anything below the 2.5% and above 97.5% quantiles
+minmax   <- quantile(data[[mpkHeader]], c(0.025, 0.975))
+oddData  <- data[[mpkHeader]] < minmax[1] | data[[mpkHeader]] > minmax[2]
+outliers <- data[ oddData, ]
+## Consider days within 95% of the mpk range and that are not
+## duplicated as "trustworthy":
+trusty   <- data[ !oddData & !isDup, ]
+mpkWh    <- sum(trusty$MilesEMV, na.rm=TRUE) / sum(trusty$Consumed, na.rm=TRUE)
+
+## Days where the battery has been reliably fully depleted
+fullUse  <- trusty[ !is.na(trusty$MilesICE), ]
+capacity <- mean(fullUse$Consumed)
+    
 ## Display summary stats:
 msg <- sprintf("Summary statistics:
        Time : %d days (%.2f years)
@@ -45,7 +63,10 @@ msg <- sprintf("Summary statistics:
   ICE miles : %.1f
         kWh : %.2f
      Mi/kWh : %.2f
-", days, days / 365, milesEMV, milesICE, totalkWh, mpkWh)
+   Capacity : %.2f kWh
+      Range : %.1f miles
+", days, days / 365, milesEMV, milesICE, totalkWh, mpkWh, capacity,
+              capacity * mpkWh )
 
 ## See if additional information is embedded in comments
 coms <- readLines(file, n=20L)
@@ -60,6 +81,7 @@ mpg  <- if (length(mpg) > 0) {
 } else {
     54 # Default mileage for ICE, 
 }
+
 cpk  <- grepl('Cents per kWh', coms, ignore.case=TRUE)
 if (length(cpk) > 0) {
     ## Calculate comparative cost per gallon
@@ -75,9 +97,18 @@ if (length(cpk) > 0) {
 ", cost, yearly, elecGal))
 }
 
-head <- readLines("head.md")
+if (nrow(outliers) > 0) {
+    message("Some days have unusual ", mpkHeader," values:")
+    print(outliers)
+    message(strrep('-',60))
+}
 
-cat(head, "```", paste(msg, collapse=''), "```", file="README.md", sep="\n")
+
+## Stitch together the Markdown report
+head <- readLines("head.md")
+tail <- readLines("tail.md")
+cat(head, "```", paste(msg, collapse=''), "```", tail,
+    file="README.md", sep="\n")
 
 message(msg)
 
