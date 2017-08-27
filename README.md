@@ -29,8 +29,8 @@ Summary statistics:
        Time : 71 days (0.19 years)
   EMV miles : 1306.0
   ICE miles : 69.6
-        kWh : 348.67
-     Mi/kWh : 3.70
+Consumption : 348.67 kWh
+    Mileage : 3.70 Mi/kWh
    Capacity : 7.31 kWh
       Range : 27.0 miles
         MPG : 54.0

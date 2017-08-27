@@ -61,8 +61,8 @@ msg <- sprintf("Summary statistics:
        Time : %d days (%.2f years)
   EMV miles : %.1f
   ICE miles : %.1f
-        kWh : %.2f
-     Mi/kWh : %.2f
+Consumption : %.2f kWh
+    Mileage : %.2f Mi/kWh
    Capacity : %.2f kWh
       Range : %.1f miles
 ", days, days / 365, milesEMV, milesICE, totalkWh, mpkWh, capacity,
