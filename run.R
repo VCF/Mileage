@@ -114,6 +114,9 @@ if (nrow(outliers) > 0) {
 
 message(msg)
 
+
+## Plots
+
 #minDate <- as.numeric(min(data$Date))
 #maxDate <- as.numeric(max(data$Date))
 minDate  <- -Inf
@@ -124,9 +127,13 @@ ggplot(data, aes_string(x="Date", y="`Mi/kWh`", ymax=5)) +
     geom_rect(xmin=minDate, xmax=maxDate,
               ymin=oddMin, ymax=oddMax,fill="#ffffaa") +
     geom_point()
+## Ignoring for now - interested to see if there are seasonal differences
 
 
+## Mileage Histogram
 
+labelStep <- 2
+labelSize <- 6
 ggplot(data, aes_string("`Mi/kWh`")) +
     geom_rect(xmin=oddMin, xmax=oddMax,
               ymin=0, ymax=Inf,fill="#ffffaa") +
@@ -135,22 +142,31 @@ ggplot(data, aes_string("`Mi/kWh`")) +
     xlab("Miles per kilowatt-hour") +
     ylab("Number of trips") +
     annotate("label", x = oddMax + 0.2, y=0, hjust=0, vjust=0, fill="#ffffaa",
-             size=4,
+             size=labelSize,
              label=paste("IQR =", oddMin,"-",oddMax)) +
-    annotate("label", x = oddMax + 0.2, y=3, hjust=0, vjust=0, fill="#ffaaaa",
-             size=4,
-             label=paste("Average =", mpkWh)) +
+    annotate("label", x = oddMax + 0.2, y=labelStep, hjust=0, vjust=0,
+             fill="#ffaaaa", size=labelSize,
+             label=sprintf("Average = %.2f mi/kWh", mpkWh)) +
+    annotate("label", x = oddMax + 0.2, y=labelStep*2, hjust=0, vjust=0,
+             fill="#aaaaff", size=labelSize,
+             label=sprintf("Breakeven = $%.2f/gal", elecGal)) +
     scale_x_continuous(sec.axis=sec_axis(~(mpg * cpk/100)/.,
                        name=paste("Break-even gasoline price (presuming",
                            mpg,"mpg and",signif(cpk,3),"cents/kWh)"))) +
+    ggtitle("Prius Prime Electric Mileage") +
     theme(
         axis.title = element_text(face="bold", size=rel(1.5)),
-        axis.text = element_text(face="bold", size=rel(1.5))
+        axis.text  = element_text(face="bold", size=rel(1.5)),
+        axis.text.x.top  = element_text(color="blue"),
+        axis.title.x.top = element_text(color="blue"),
+        axis.text.x      = element_text(color="red"),
+        axis.title.x     = element_text(color="red"),
+        plot.title = element_text(face="bold", size=rel(2))
         )
 
 
 
-ggsave("Mileage.png", dpi=75, width=8, height=4)
+ggsave("Mileage.png", dpi=75, width=9, height=5)
 
 
 

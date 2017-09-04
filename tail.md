@@ -2,7 +2,7 @@
 
 ### Mileage Variation
 
-[Mileage Histogram](Mileage.png)
+![Mileage Histogram](Mileage.png)
 
 The above plot shows variation in mileage over different trips. The
 IQR is the [interquartile range][IQR], and is used here to exclude
