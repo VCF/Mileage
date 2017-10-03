@@ -26,17 +26,17 @@ cost of a kWh. It is parsed by [run.R](run.R).
 Current data (EMV=Electric vehicle, ICE=Gasoline):
 ```
 Summary statistics:
-       Time : 77 days (0.21 years)
-  EMV miles : 1417.0
-  ICE miles : 69.6
-Consumption : 378.57 kWh
-    Mileage : 3.72 Mi/kWh
-   Capacity : 7.31 kWh
-      Range : 27.2 miles
+       Time : 108 days (0.30 years)
+  EMV miles : 1878.1
+  ICE miles : 205.0
+Consumption : 509.97 kWh
+    Mileage : 3.66 Mi/kWh
+   Capacity : 7.37 kWh
+      Range : 27.0 miles
         MPG : 54.0
   Cents/kWh : 17.6
- Electicity : $66.60 ($315.68/year)
-  BreakEven : $2.55/gal = Equivalent cost of gasoline
+ Electicity : $89.71 ($303.19/year)
+  BreakEven : $2.60/gal = Equivalent cost of gasoline
 
 ```
 
